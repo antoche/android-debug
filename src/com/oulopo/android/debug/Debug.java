@@ -52,15 +52,27 @@ public class Debug {
 	public void onCreateApp(Application app ) {
 		Logging.initLogger( app );
 		mReporter.init( app );
+		if( mUseAnalytics )
+		{
+			EasyTracker.getInstance().setContext(app);
+		}
 	}
 	
 	public void handleException(Throwable e) 
 	{
+		if( mUseAnalytics )
+		{
+			EasyTracker.getTracker().sendException( e.toString(), e, false );
+		}
 		mReporter.handleException(e);
 	}
 
 	public void handleSilentException(Throwable e) 
 	{
+		if( mUseAnalytics )
+		{
+			EasyTracker.getTracker().sendException( e.toString(), e, false );
+		}
 		mReporter.handleSilentException(e);
 	}
 
