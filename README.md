@@ -70,6 +70,10 @@ crash report services available out there.
      * Requires an account on Crittercism
      * Requires the Crittercism SDK 
      * See https://www.crittercism.com/
+* `FlurryReporter`:
+     * Requires an account on Flurry Analytics
+     * Requires the FlurryAgent SDK
+     * See http://www.flurry.com/
 * `GoogleAnalyticsReporter`:
      * Requires an account on Google Analytics
      * Requires the Google Analytics SDK v2
