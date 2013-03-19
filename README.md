@@ -11,7 +11,6 @@ crash report services available out there.
 
 * Import the code into your project
 * Add lockback-android to your project: http://tony19.github.com/logback-android/
-* Setup your project for Google Analytics (or disable the analytics code)
 * Have your `Application` follow this model (where `SomeReporter` and `SomeOtherReporter` are two of the available reporters in the package):
 
         @ReportsCrashes( 
@@ -45,8 +44,12 @@ crash report services available out there.
 * If something doesn't seem to work, check logcat.
 * Don't forget to read the comments and the vendor's docs.
 * You can add as many reporters as you like, except for the ACRA-based reporters (you can only have one of those). 
-  They should all work in parallel (and their exception handler should chain). If you use more than one ACRA-based reorter, 
+  They should all work in parallel (and their exception handler should chain). If you use more than one ACRA-based reporter, 
   they'll override each other's config and the last one will win.
+* To get the most of the log reporting, use Logback's logger via `Logging.getLogger` instead of Android's (see the reporters'
+  code for examples). This allows you to send your logs in the crash reports (for those that support it) by loggin into a file
+  without having to deal with the broken logcat permission. All log calls still go into logcat as well. It's a good idea to
+  clean up the log file every once in a while (e.g., call `Logging.deleteLog` when your main activity is destroyed or stopped).
 
 ## Reporters requirements
 
