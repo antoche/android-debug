@@ -12,7 +12,7 @@ crash report services available out there.
 * Import the code into your project
 * Add lockback-android to your project: http://tony19.github.com/logback-android/
 * Setup your project for Google Analytics (or disable the analytics code)
-* Have your `Application` follow this model (where `MyReporter` is one of the available reporters in the package):
+* Have your `Application` follow this model (where `SomeReporter` and `SomeOtherReporter` are two of the available reporters in the package):
 
         @ReportsCrashes( 
            formKey = "",
@@ -21,8 +21,8 @@ crash report services available out there.
         )
         public class MyApp extends Application {
             static public Debug debug = new Debug( 
-                true,
-                new MyReporter( "https://my.server/", "user", "password" )
+                new SomeReporter( "specialKey" ),
+                new SomeOtherReporter( "https://my.server/", "user", "password" )
             );
             @Override
             public void onCreate() {
@@ -30,12 +30,10 @@ crash report services available out there.
                 debug.onCreateApp(this);
             }
         }
-
 * Each reporter requires you to create an account to the corresponding service (or host it) and may require your to download the vendor's SDK as well. See "Reporters requirements" below.
 * Test the reporting by throwing an exception from somewhere in your code:
 
         throw new RuntimeException( "Hey, is this working?" );
-
   or try sending a handled exception to the reporter:
 
         // ...
@@ -43,9 +41,12 @@ crash report services available out there.
         {
             MyApp.debug.handleException( e );
         }
-* If all goes according to plan, the service associated with the reporter should have received the crash report.
+* If all goes according to plan, the service associated with each registered reporter should have received the crash report.
 * If something doesn't seem to work, check logcat.
 * Don't forget to read the comments and the vendor's docs.
+* You can add as many reporters as you like, except for the ACRA-based reporters (you can only have one of those). 
+  They should all work in parallel (and their exception handler should chain). If you use more than one ACRA-based reorter, 
+  they'll override each other's config and the last one will win.
 
 ## Reporters requirements
 
@@ -69,6 +70,10 @@ crash report services available out there.
      * Requires an account on Crittercism
      * Requires the Crittercism SDK 
      * See https://www.crittercism.com/
+* `GoogleAnalyticsReporter`:
+     * Requires an account on Google Analytics
+     * Requires the Google Analytics SDK v2
+     * See https://developers.google.com/analytics/devguides/collection/android/v2/
 * `HockeyappReporter`:
      * Requires an account on HockeyApp
      * Requires ACRA: http://acra.ch/

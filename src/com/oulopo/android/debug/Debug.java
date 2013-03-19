@@ -6,9 +6,6 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 
-import com.google.analytics.tracking.android.EasyTracker;
-import com.google.analytics.tracking.android.GoogleAnalytics;
-
 /**
  * 
  * Wrapper utility around logging, analytics and crash reporting facilities.
@@ -26,7 +23,7 @@ import com.google.analytics.tracking.android.GoogleAnalytics;
  * )
  * public class MyApp extends Application {
  * 	static public Debug debug = new Debug( 
- * 		true,
+ * 		new GoogleAnalyticsReporter(),
  * 		new AcralyzerReporter( "https://my.server/", "user", "password" )
  * 	);
  * 
@@ -41,86 +38,80 @@ import com.google.analytics.tracking.android.GoogleAnalytics;
  */
 public class Debug {
 	static final Logger LOG = Logging.getLogger(Debug.class);
-	static boolean mUseAnalytics = true;
-	static Reporter mReporter; 
+	static Reporter[] mReporters; 
 		
-	public Debug( boolean useAnalytics, Reporter reporter ) {
-		mUseAnalytics = useAnalytics;
-		mReporter = reporter;
+	public Debug( Reporter... reporters ) {
+		mReporters = reporters;
 	}
 	
 	public void onCreateApp(Application app ) {
 		Logging.initLogger( app );
-		mReporter.init( app );
-		if( mUseAnalytics )
-		{
-			EasyTracker.getInstance().setContext(app);
+		for( Reporter r: mReporters ) {
+			r.init( app );	
 		}
 	}
 	
 	public void handleException(Throwable e) 
 	{
-		if( mUseAnalytics )
-		{
-			EasyTracker.getTracker().sendException( e.toString(), e, false );
+		for( Reporter r: mReporters ) {
+			r.handleException(e);
 		}
-		mReporter.handleException(e);
 	}
 
 	public void handleSilentException(Throwable e) 
 	{
-		if( mUseAnalytics )
-		{
-			EasyTracker.getTracker().sendException( e.toString(), e, false );
+		for( Reporter r: mReporters ) {
+			r.handleSilentException(e);
 		}
-		mReporter.handleSilentException(e);
 	}
 
 	public void putCustomData(String key, String value) 
 	{
-		mReporter.putCustomData(key, value);
+		for( Reporter r: mReporters ) {
+			r.putCustomData(key, value);
+		}
 	} 
 
 	public void onCreateActivity(Activity a) 
 	{
-		mReporter.onCreateActivity(a);
+		for( Reporter r: mReporters ) {
+			r.onCreateActivity(a);
+		}
 	}
 
 	public void onStartActivity(Activity a)
 	{
-		if( mUseAnalytics )
-		{
-			EasyTracker.getInstance().activityStart( a );
+		for( Reporter r: mReporters ) {
+			r.onStartActivity(a);
 		}
-		mReporter.onStartActivity(a);
 	}
 
 	public void onStopActivity(Activity a)
 	{
-		if( mUseAnalytics )
-		{
-			EasyTracker.getInstance().activityStart( a );
+		for( Reporter r: mReporters ) {
+			r.onStopActivity(a);
 		}
-		mReporter.onStopActivity(a);
 	}
 
 	public void onResumeActivity(Activity a) 
 	{
-		mReporter.onResumeActivity(a);
+		for( Reporter r: mReporters ) {
+			r.onResumeActivity(a);
+		}
 	}
 
 	public void onPauseActivity(Activity a) 
 	{
-		mReporter.onPauseActivity(a);
+		for( Reporter r: mReporters ) {
+			r.onPauseActivity(a);
+		}
 	} 
 
 	public void toggleReports(Context context, boolean state)
 	{
-		if( mUseAnalytics ) {
-			GoogleAnalytics.getInstance( context ).setAppOptOut( !state );
+		for( Reporter r: mReporters ) {
+			r.toggleReports(context, state);
 		}
-		mReporter.toggleReports(context, state);
 	}
-
 
 }
