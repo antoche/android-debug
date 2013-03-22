@@ -90,7 +90,7 @@ public class Logging {
 		}
 	}
 	
-	public static Logger getLogger(Class clazz) {
+	public static Logger getLogger(Class<?> clazz) {
 		return LoggerFactory.getLogger( clazz );
 	}
 	
